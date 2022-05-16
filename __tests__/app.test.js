@@ -19,7 +19,7 @@ describe("get api topics", () => {
       .get("/api/topics")
       .expect(200)
       .then((data) => {
-          expect(data.body.topics).toHaveLength(3)
+        expect(data.body.topics).toHaveLength(3);
         data.body.topics.forEach((topic) => {
           expect(topic).toHaveProperty("slug");
           expect(topic).toHaveProperty("description");
@@ -31,7 +31,42 @@ describe("get api topics", () => {
       .get("/api/fish")
       .expect(404)
       .then((data) => {
-          expect(data.text).toEqual("Endpoint Not Found")
+        expect(data.text).toEqual("Endpoint Not Found");
+      });
+  });
+});
+
+describe("get api articles", () => {
+  test("200: should return an article object which has the following properties, author ,title, article_id, body, topic, created_at and votes", () => {
+    return request(app)
+      .get("/api/articles/1")
+      .expect(200)
+      .then((data) => {
+        expect(data.body.article).toHaveProperty(
+          "author",
+          "title",
+          "article_id",
+          "body",
+          "topic",
+          "created_at",
+          "votes"
+        );
+      });
+  });
+  test("400: if the article_id is not a number return bad request message", () => {
+    return request(app)
+      .get("/api/articles/fish")
+      .expect(400)
+      .then((data) => {
+        expect(data.text).toEqual("Bad Request");
+      });
+  });
+  test("404: if the article_id is a number but not the number matching an article return a not found message", () => {
+    return request(app)
+      .get("/api/articles/9999999")
+      .expect(404)
+      .then((data) => {
+        expect(data.text).toEqual("Not Found");
       });
   });
 });
