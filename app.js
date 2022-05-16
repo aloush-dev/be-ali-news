@@ -1,11 +1,12 @@
 const express = require("express");
 const app = express();
 
-const { getTopics, getArticles } = require("./controllers/get-controller");
+const { getTopics } = require("./controllers/topic-controller");
+const { getArticlesByID } = require("./controllers/article-controller");
 
 app.get("/api/topics", getTopics);
 
-app.get("/api/articles/:article_id", getArticles);
+app.get("/api/articles/:article_id", getArticlesByID);
 
 app.get("/api/*", (req, res) => {
   res.status(404).send("Endpoint Not Found");
