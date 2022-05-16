@@ -9,10 +9,8 @@ First you will need to create two new files
 * .env.development
 
 Each of these will setup the database based on if you want the full database set or just some test data.\
-Now edit each of these files and copy the following text into each 'PGDATABASE=database_name_here'
+Now edit each of these files and copy the following text into each 'PGDATABASE=database_name_here' and replace 'database_name_here' with the databases you are looking to access.
 
-for the .test file replace 'database_name_here' with 'nc_news_test'\
-for the .development file replace 'database_name_here' with 'nc_news'
 
 **The .env files are automatically added to git ignore so you will have to do this each time you clone the repo**
 
