@@ -19,18 +19,18 @@ describe("get api topics", () => {
       .get("/api/topics")
       .expect(200)
       .then((data) => {
-        data.body.forEach((topic) => {
+          expect(data.body.topics).toHaveLength(3)
+        data.body.topics.forEach((topic) => {
           expect(topic).toHaveProperty("slug");
           expect(topic).toHaveProperty("description");
         });
       });
   });
-  test("400 : should respond with bad request if given an endpoint other than topics", () => {
+  test("404 : should respond with bad request if given an endpoint other than topics", () => {
     return request(app)
       .get("/api/fish")
       .expect(404)
       .then((data) => {
-          console.log(data)
           expect(data.text).toEqual("Endpoint Not Found")
       });
   });
