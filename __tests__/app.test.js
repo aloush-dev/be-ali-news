@@ -31,7 +31,7 @@ describe("get api topics", () => {
       .get("/api/fish")
       .expect(404)
       .then((data) => {
-        expect(data.text).toEqual("Endpoint Not Found");
+        expect(data.body).toEqual({ msg: "Endpoint Not Found" });
       });
   });
 });
@@ -57,8 +57,8 @@ describe("get api articles", () => {
     return request(app)
       .get("/api/articles/fish")
       .expect(400)
-      .then((data) => {
-        expect(data.text).toEqual("Bad Request");
+      .then((response) => {
+        expect(response.body).toEqual({ msg: "Bad Request" });
       });
   });
   test("404: if the article_id is a number but not the number matching an article return a not found message", () => {
@@ -66,18 +66,18 @@ describe("get api articles", () => {
       .get("/api/articles/9999999")
       .expect(404)
       .then((data) => {
-        expect(data.text).toEqual("Not Found");
+        expect(data.body).toEqual({ msg: "Not Found" });
       });
   });
 });
 
 describe("patch api articles", () => {
-  test("201 : should accept an object with a POSITIVE number value. Update the article given in the endpoint with the amount of votes given in the article. ", () => {
-    const updateVotes = { inc_votes: 1 };
+  test("200 : should accept an object with a POSITIVE number value. Update the article given in the endpoint with the amount of votes given in the article. ", () => {
+    const updateVotes = { inc_votes: 10 };
 
     return request(app)
       .patch("/api/articles/1")
-      .expect(201)
+      .expect(200)
       .send(updateVotes)
       .then((data) => {
         expect(data.body.article).toEqual({
@@ -87,16 +87,16 @@ describe("patch api articles", () => {
           author: "butter_bridge",
           body: "I find this existence challenging",
           created_at: "2020-07-09T20:11:00.000Z",
-          votes: 101,
+          votes: 110,
         });
       });
   });
-  test("201 : should accept an object with a NEGATIVE number value. Update the article given in the endpoint with the amount of votes given in the article. ", () => {
+  test("200 : should accept an object with a NEGATIVE number value. Update the article given in the endpoint with the amount of votes given in the article. ", () => {
     const updateVotes = { inc_votes: -50 };
 
     return request(app)
       .patch("/api/articles/1")
-      .expect(201)
+      .expect(200)
       .send(updateVotes)
       .then((data) => {
         expect(data.body.article).toEqual({
@@ -118,7 +118,7 @@ describe("patch api articles", () => {
       .expect(400)
       .send(updateVotes)
       .then((data) => {
-          expect(data.text).toEqual("Wrong Object Type")
+        expect(data.body).toEqual({ msg: "Wrong Object Type" });
       });
   });
 });
