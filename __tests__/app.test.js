@@ -70,3 +70,55 @@ describe("get api articles", () => {
       });
   });
 });
+
+describe("patch api articles", () => {
+  test("201 : should accept an object with a POSITIVE number value. Update the article given in the endpoint with the amount of votes given in the article. ", () => {
+    const updateVotes = { inc_votes: 1 };
+
+    return request(app)
+      .patch("/api/articles/1")
+      .expect(201)
+      .send(updateVotes)
+      .then((data) => {
+        expect(data.body.article).toEqual({
+          article_id: 1,
+          title: "Living in the shadow of a great man",
+          topic: "mitch",
+          author: "butter_bridge",
+          body: "I find this existence challenging",
+          created_at: "2020-07-09T20:11:00.000Z",
+          votes: 101,
+        });
+      });
+  });
+  test("201 : should accept an object with a NEGATIVE number value. Update the article given in the endpoint with the amount of votes given in the article. ", () => {
+    const updateVotes = { inc_votes: -50 };
+
+    return request(app)
+      .patch("/api/articles/1")
+      .expect(201)
+      .send(updateVotes)
+      .then((data) => {
+        expect(data.body.article).toEqual({
+          article_id: 1,
+          title: "Living in the shadow of a great man",
+          topic: "mitch",
+          author: "butter_bridge",
+          body: "I find this existence challenging",
+          created_at: "2020-07-09T20:11:00.000Z",
+          votes: 50,
+        });
+      });
+  });
+  test("400: check that the object which is being given has the correct properties", () => {
+    const updateVotes = { haha_wrong_prop: -50 };
+
+    return request(app)
+      .patch("/api/articles/1")
+      .expect(400)
+      .send(updateVotes)
+      .then((data) => {
+          expect(data.text).toEqual("Wrong Object Type")
+      });
+  });
+});
