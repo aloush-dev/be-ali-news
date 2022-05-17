@@ -122,3 +122,23 @@ describe("patch api articles", () => {
       });
   });
 });
+
+describe("get api users", () => {
+  test("200: should return an array of users with their usernames", () => {
+    return request(app)
+      .get("/api/users")
+      .expect(200)
+      .then((data) => {
+        expect(data.body.users).toHaveLength(4);
+        expect(data.body.users[0]).toHaveProperty("username");
+      });
+  });
+  test("404: should return Endpoint Not Found if given any endpoint other than users", () => {
+    return request(app)
+      .get("/api/jelly")
+      .expect(404)
+      .then((data) => {
+        expect(data.body).toEqual({ msg: "Endpoint Not Found" });
+      });
+  }); 
+});

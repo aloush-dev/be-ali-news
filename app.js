@@ -1,13 +1,20 @@
 const express = require("express");
 const app = express();
 
-app.use(express.json());
-
+const {
+  handleApiReqErrors,
+  handleCustomErrors,
+  handlePsqlErrors,
+  handleServerErrors,
+} = require("./errors/index");
 const { getTopics } = require("./controllers/topic-controller");
 const {
   getArticlesByID,
   patchArticleVotes,
 } = require("./controllers/article-controller");
+const { getUsers } = require("./controllers/user-controller");
+
+app.use(express.json());
 
 app.get("/api/topics", getTopics);
 
@@ -15,28 +22,13 @@ app.get("/api/articles/:article_id", getArticlesByID);
 
 app.patch("/api/articles/:article_id", patchArticleVotes);
 
-app.get("/api/*", (req, res) => {
-  res.status(404).send({ msg: "Endpoint Not Found" });
-});
+app.get("/api/users", getUsers);
 
-// Custom Error Handling
-app.use((err, req, res, next) => {
-  if (err.status && err.msg) {
-    res.status(err.status).send({ msg: err.msg });
-  } else next(err);
-});
+// ERROR HANDLING
 
-// PSQL Error Handling
-app.use((err, req, res, next) => {
-  if (err.code === "22P02") {
-    res.status(400).send({ msg: "Bad Request" });
-  } else next(err);
-});
-
-//Server Error Handling
-app.use((err, req, res, next) => {
-  console.log(err);
-  res.status(500).send({ msg: "Internal Server Error" });
-});
+app.get("/api/*", handleApiReqErrors);
+app.use(handleCustomErrors);
+app.use(handlePsqlErrors);
+app.use(handleServerErrors);
 
 module.exports = app;

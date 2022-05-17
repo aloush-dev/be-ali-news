@@ -16,7 +16,5 @@ exports.patchArticleVotes = (req, res, next) => {
     .then((data) => {
       res.status(200).send({ article: data[0] });
     })
-    .catch((err) => {
-      next(err);
-    });
+    .catch(next);
 };
