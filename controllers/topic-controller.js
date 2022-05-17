@@ -5,9 +5,6 @@ exports.getTopics = (req, res, next) => {
     .then((data) => {
       res.status(200).send({ topics: data });
     })
-    .catch((err) => {
-      console.log(err);
-      next(err);
-    });
+    .catch(next);
 };
 

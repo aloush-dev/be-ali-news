@@ -13,6 +13,17 @@ afterAll(() => {
   return db.end();
 });
 
+describe("check endpoint", () => {
+  test("404: should return Endpoint Not Found if given any endpoint other than users", () => {
+    return request(app)
+      .get("/api/jelly")
+      .expect(404)
+      .then((data) => {
+        expect(data.body).toEqual({ msg: "Endpoint Not Found" });
+      });
+  });
+});
+
 describe("get api topics", () => {
   test("200 : should respond with an array of topic objects with the properties slug and description", () => {
     return request(app)
@@ -24,14 +35,6 @@ describe("get api topics", () => {
           expect(topic).toHaveProperty("slug");
           expect(topic).toHaveProperty("description");
         });
-      });
-  });
-  test("404 : should respond with bad request if given an endpoint other than topics", () => {
-    return request(app)
-      .get("/api/fish")
-      .expect(404)
-      .then((data) => {
-        expect(data.body).toEqual({ msg: "Endpoint Not Found" });
       });
   });
 });
@@ -119,6 +122,20 @@ describe("patch api articles", () => {
       .send(updateVotes)
       .then((data) => {
         expect(data.body).toEqual({ msg: "Wrong Object Type" });
+      });
+  });
+});
+
+describe("get api users", () => {
+  test("200: should return an array of users with their usernames", () => {
+    return request(app)
+      .get("/api/users")
+      .expect(200)
+      .then((data) => {
+        expect(data.body.users).toHaveLength(4);
+        data.body.users.forEach((user) => {
+          expect(user).toHaveProperty("username");
+        });
       });
   });
 });
