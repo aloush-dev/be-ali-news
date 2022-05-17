@@ -1,13 +1,16 @@
 const {
   fetchArticlesByID,
   fetchArticleVotes,
+  fetchCommentCount,
 } = require("../models/article-model");
 
 exports.getArticlesByID = (req, res, next) => {
-  fetchArticlesByID(req.params)
+  Promise.all([fetchArticlesByID(req.params), fetchCommentCount(req.params)])
     .then((data) => {
-      res.status(200).send({ article: data[0] });
+      data[0][0].comment_count = data[1];
+      res.status(200).send({ article: data[0][0] });
     })
+
     .catch(next);
 };
 

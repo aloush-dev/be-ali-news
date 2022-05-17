@@ -28,3 +28,13 @@ exports.fetchArticleVotes = (articleID, votes) => {
       return data.rows;
     });
 };
+
+exports.fetchCommentCount = (articleID = { article_id: "1" }) => {
+  const { article_id } = articleID;
+
+  return db
+    .query(`SELECT * FROM comments WHERE article_id = $1;`, [article_id])
+    .then((data) => {;
+      return data.rows.length;
+    });
+};
