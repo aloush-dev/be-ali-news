@@ -29,7 +29,7 @@ exports.fetchArticleVotes = (articleID, votes) => {
     });
 };
 
-exports.fetchCommentCount = (articleID = { article_id: "1" }) => {
+exports.fetchCommentCount = (articleID) => {
   const { article_id } = articleID;
 
   return db
