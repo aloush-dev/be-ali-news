@@ -31,7 +31,7 @@ describe("get api topics", () => {
       .get("/api/fish")
       .expect(404)
       .then((data) => {
-        expect(data.text).toEqual("Endpoint Not Found");
+        expect(data.body).toEqual({ msg: "Endpoint Not Found" });
       });
   });
 });
@@ -57,8 +57,8 @@ describe("get api articles", () => {
     return request(app)
       .get("/api/articles/fish")
       .expect(400)
-      .then((data) => {
-        expect(data.text).toEqual("Bad Request");
+      .then((response) => {
+        expect(response.body).toEqual({ msg: "Bad Request" });
       });
   });
   test("404: if the article_id is a number but not the number matching an article return a not found message", () => {
@@ -66,7 +66,59 @@ describe("get api articles", () => {
       .get("/api/articles/9999999")
       .expect(404)
       .then((data) => {
-        expect(data.text).toEqual("Not Found");
+        expect(data.body).toEqual({ msg: "Not Found" });
+      });
+  });
+});
+
+describe("patch api articles", () => {
+  test("200 : should accept an object with a POSITIVE number value. Update the article given in the endpoint with the amount of votes given in the article. ", () => {
+    const updateVotes = { inc_votes: 10 };
+
+    return request(app)
+      .patch("/api/articles/1")
+      .expect(200)
+      .send(updateVotes)
+      .then((data) => {
+        expect(data.body.article).toEqual({
+          article_id: 1,
+          title: "Living in the shadow of a great man",
+          topic: "mitch",
+          author: "butter_bridge",
+          body: "I find this existence challenging",
+          created_at: "2020-07-09T20:11:00.000Z",
+          votes: 110,
+        });
+      });
+  });
+  test("200 : should accept an object with a NEGATIVE number value. Update the article given in the endpoint with the amount of votes given in the article. ", () => {
+    const updateVotes = { inc_votes: -50 };
+
+    return request(app)
+      .patch("/api/articles/1")
+      .expect(200)
+      .send(updateVotes)
+      .then((data) => {
+        expect(data.body.article).toEqual({
+          article_id: 1,
+          title: "Living in the shadow of a great man",
+          topic: "mitch",
+          author: "butter_bridge",
+          body: "I find this existence challenging",
+          created_at: "2020-07-09T20:11:00.000Z",
+          votes: 50,
+        });
+      });
+  });
+  test("400: check that the object which is being given has the correct properties", () => {
+    const updateVotes = { haha_wrong_prop: -50 };
+
+    return request(app)
+      .patch("/api/articles/1")
+      .expect(400)
+      .send(updateVotes)
+      .then((data) => {
+        expect(data.body).toEqual({ msg: "Wrong Object Type" });
       });
   });
 });
