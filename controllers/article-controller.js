@@ -6,8 +6,10 @@ const {
 exports.getArticlesByID = (req, res, next) => {
   fetchArticlesByID(req.params)
     .then((data) => {
+      console.log(data)
       res.status(200).send({ article: data[0] });
     })
+
     .catch(next);
 };
 

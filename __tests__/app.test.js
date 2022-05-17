@@ -139,3 +139,24 @@ describe("get api users", () => {
       });
   });
 });
+
+describe("get api articles with comments", () => {
+  test("200 : should return a requested article as on object including a comment count", () => {
+    return request(app)
+      .get("/api/articles/1")
+      .expect(200)
+      .then((data) => {
+        expect(data.body.article).toHaveProperty("comment_count");
+        expect(data.body.article.comment_count).toBe(11);
+      });
+  });
+  test("200 : should return a requested article as on object including a comment count showing zero if no comments", () => {
+    return request(app)
+      .get("/api/articles/2")
+      .expect(200)
+      .then((data) => {
+        expect(data.body.article).toHaveProperty("comment_count");
+        expect(data.body.article.comment_count).toBe(0);
+      });
+  });
+});
