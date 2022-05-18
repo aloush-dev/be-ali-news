@@ -289,7 +289,84 @@ describe("POST /api/articles/:article_id/comments", () => {
       .expect(400)
       .send(commentObj)
       .then((data) => {
-        expect(data.body).toEqual({msg: "Bad Request"});
+        expect(data.body).toEqual({ msg: "Bad Request" });
+      });
+  });
+});
+
+describe.only("GET /api/articles (queries)", () => {
+  test("200: should return an array of articles sorted by a created_at by default", () => {
+    return request(app)
+      .get("/api/articles")
+      .expect(200)
+      .then((data) => {
+        expect(data.body.article).toBeSortedBy("created_at", {
+          descending: true,
+        });
+      });
+  });
+  test("200: should return an array of articles sorted by a given query", () => {
+    return request(app)
+      .get("/api/articles?sort_by=comment_count")
+      .expect(200)
+      .then((data) => {
+        expect(data.body.article).toBeSortedBy("comment_count", {
+          descending: true,
+        });
+      });
+  });
+  test("400: If given a sort by term which doesnt exist return Invalid Sort Term", () => {
+    return request(app)
+      .get("/api/articles?sort_by=shoe_size")
+      .expect(400)
+      .then((data) => {
+        expect(data.body).toEqual({ msg: "Invalid Sort Term" });
+      });
+  });
+  test("200: should return an array of articles sorted by a given query ordered by a given order (defaults to descending)", () => {
+    return request(app)
+      .get("/api/articles?sort_by=topic")
+      .expect(200)
+      .then((data) => {
+        expect(data.body.article).toBeSortedBy("topic", {
+          descending: true,
+        });
+      });
+  });
+  test("200: should return an array of articles sorted by a given query ordered by a given order (Ascending)", () => {
+    return request(app)
+      .get("/api/articles?sort_by=article_id&order=ASC")
+      .expect(200)
+      .then((data) => {
+        expect(data.body.article).toBeSortedBy("article_id", {
+          descending: false,
+        });
+      });
+  });
+  test("400: If given a order by term which doesnt exist return Invalid Sort Term", () => {
+    return request(app)
+      .get("/api/articles?sort_by=topic&order=highest")
+      .expect(400)
+      .then((data) => {
+        expect(data.body).toEqual({ msg: "Invalid Order Term" });
+      });
+  });
+  test("200: Should return an array of articles filtered by the given topic in the query", () => {
+    return request(app)
+      .get("/api/articles?topic=mitch")
+      .expect(200)
+      .then((data) => {
+        data.body.article.forEach((article) => {
+          expect(article).toEqual(expect.objectContaining({ topic: "mitch" }));
+        });
+      });
+  });
+  test("400: Should return an array of articles filtered by the given topic in the query", () => {
+    return request(app)
+      .get("/api/articles?topic=taylor_swift")
+      .expect(400)
+      .then((data) => {
+        expect(data.body).toEqual({ msg: "Topic Doesn't Exist" });
       });
   });
 });

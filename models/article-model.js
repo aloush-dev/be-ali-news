@@ -16,7 +16,7 @@ exports.fetchArticlesByID = (reqParams) => {
     .then((data) => {
       if (data.rows.length === 0) {
         return Promise.reject({ status: 404, msg: "Not Found" });
-      };
+      }
       return data.rows;
     });
 };
@@ -38,7 +38,27 @@ exports.fetchArticleVotes = (articleID, votes) => {
     });
 };
 
-exports.fetchArticles = () => {
+exports.fetchArticles = (sortBy = "created_at", orderBy = "DESC", Topic) => {
+  const sortByList = [
+    "article_id",
+    "title",
+    "topic",
+    "author",
+    "body",
+    "created_at",
+    "votes",
+    "comment_count",
+  ];
+  const orderByList = ["ASC", "asc", "DESC", "desc"];
+
+  if (!sortByList.includes(sortBy)) {
+    return Promise.reject({ status: 400, msg: "Invalid Sort Term" });
+  }
+
+  if (!orderByList.includes(orderBy)) {
+    return Promise.reject({ status: 400, msg: "Invalid Order Term" });
+  }
+
   return db
     .query(
       `SELECT articles.*, COUNT(comment_id) :: INT
@@ -47,9 +67,18 @@ exports.fetchArticles = () => {
   LEFT JOIN comments
   ON articles.article_id = comments.article_id
   GROUP BY articles.article_id
-  ORDER BY created_at DESC;`
+  ORDER BY ${sortBy} ${orderBy};`
     )
     .then((data) => {
+      if (Topic) {
+        const ifTopicExists = data.rows.filter((data) => {
+          return data.topic === Topic;
+        });
+        if (ifTopicExists.length === 0) {
+          return Promise.reject({ status: 400, msg: "Topic Doesn't Exist" });
+        }
+        return ifTopicExists;
+      }
       return data.rows;
     });
 };

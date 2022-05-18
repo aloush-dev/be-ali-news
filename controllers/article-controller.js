@@ -22,11 +22,9 @@ exports.patchArticleVotes = (req, res, next) => {
 };
 
 exports.getArticles = (req, res, next) => {
-  fetchArticles()
+  fetchArticles(req.query.sort_by, req.query.order, req.query.topic)
     .then((data) => {
       res.status(200).send({ article: data });
     })
     .catch(next);
 };
-
-
