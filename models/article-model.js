@@ -53,4 +53,3 @@ exports.fetchArticles = () => {
       return data.rows;
     });
 };
-

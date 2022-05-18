@@ -7,7 +7,6 @@ const {
 exports.getArticlesByID = (req, res, next) => {
   fetchArticlesByID(req.params)
     .then((data) => {
-      console.log(data)
       res.status(200).send({ article: data[0] });
     })
 
@@ -23,7 +22,11 @@ exports.patchArticleVotes = (req, res, next) => {
 };
 
 exports.getArticles = (req, res, next) => {
-  fetchArticles().then((data) => {
-    res.status(200).send(data);
-  });
+  fetchArticles()
+    .then((data) => {
+      res.status(200).send({ article: data });
+    })
+    .catch(next);
 };
+
+
