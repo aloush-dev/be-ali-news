@@ -141,6 +141,18 @@ describe("get api users", () => {
   });
 });
 
+describe("get api articles with comments", () => {
+  test("200 : should return a requested article as on object including a comment count showing zero if no comments", () => {
+    return request(app)
+      .get("/api/articles/2")
+      .expect(200)
+      .then((data) => {
+        expect(data.body.article).toHaveProperty("comment_count");
+        expect(data.body.article.comment_count).toBe(0);
+      });
+  });
+});
+
 describe("get api articles", () => {
   test("200: should return an array of article objects sorted by date in descending order", () => {
     return request(app)
