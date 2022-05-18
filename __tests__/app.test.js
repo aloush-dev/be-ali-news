@@ -33,8 +33,12 @@ describe("GET /api/topic", () => {
       .then((data) => {
         expect(data.body.topics).toHaveLength(3);
         data.body.topics.forEach((topic) => {
-          expect(topic).toHaveProperty("slug");
-          expect(topic).toHaveProperty("description");
+          expect(topic).toEqual(
+            expect.objectContaining({
+              slug: expect.any(String),
+              description: expect.any(String),
+            })
+          );
         });
       });
   });
@@ -46,14 +50,16 @@ describe("GET /api/articles/:article_id", () => {
       .get("/api/articles/1")
       .expect(200)
       .then((data) => {
-        expect(data.body.article).toHaveProperty(
-          "author",
-          "title",
-          "article_id",
-          "body",
-          "topic",
-          "created_at",
-          "votes"
+        expect(data.body.article).toEqual(
+          expect.objectContaining({
+            title: expect.any(String),
+            votes: expect.any(Number),
+            created_at: expect.any(String),
+            author: expect.any(String),
+            topic: expect.any(String),
+            article_id: 1,
+            body: expect.any(String),
+          })
         );
       });
   });
@@ -135,7 +141,9 @@ describe("GET /api/users", () => {
       .then((data) => {
         expect(data.body.users).toHaveLength(4);
         data.body.users.forEach((user) => {
-          expect(user).toHaveProperty("username");
+          expect(user).toEqual(
+            expect.objectContaining({ username: expect.any(String) })
+          );
         });
       });
   });
@@ -147,7 +155,9 @@ describe("GET /api/articles/:article_id Including a comment count", () => {
       .get("/api/articles/1")
       .expect(200)
       .then((data) => {
-        expect(data.body.article).toHaveProperty("comment_count");
+        expect(data.body.article).toEqual(
+          expect.objectContaining({ comment_count: expect.any(Number) })
+        );
         expect(data.body.article.comment_count).toBe(11);
       });
   });
@@ -156,7 +166,9 @@ describe("GET /api/articles/:article_id Including a comment count", () => {
       .get("/api/articles/2")
       .expect(200)
       .then((data) => {
-        expect(data.body.article).toHaveProperty("comment_count");
+        expect(data.body.article).toEqual(
+          expect.objectContaining({ comment_count: expect.any(Number) })
+        );
         expect(data.body.article.comment_count).toBe(0);
       });
   });
@@ -173,14 +185,15 @@ describe("GET /api/articles", () => {
           descending: true,
         });
         data.body.article.forEach((article) => {
-          expect(article).toHaveProperty(
-            "author",
-            "title",
-            "article_id",
-            "topic",
-            "created_at",
-            "votes",
-            "comment_count"
+          expect(article).toEqual(
+            expect.objectContaining({
+              title: expect.any(String),
+              votes: expect.any(Number),
+              created_at: expect.any(String),
+              author: expect.any(String),
+              topic: expect.any(String),
+              comment_count: expect.any(Number),
+            })
           );
         });
       });
@@ -195,14 +208,88 @@ describe("GET /api/articles/article_id/comments ", () => {
       .then((data) => {
         expect(data.body.comments).toHaveLength(11);
         data.body.comments.forEach((comment) => {
-          expect(comment).toHaveProperty(
-            "comment_id",
-            "author",
-            "votes",
-            "created_at",
-            "body"
+          expect(comment).toEqual(
+            expect.objectContaining({
+              comment_id: expect.any(Number),
+              votes: expect.any(Number),
+              created_at: expect.any(String),
+              author: expect.any(String),
+              body: expect.any(String),
+            })
           );
         });
+      });
+  });
+});
+
+describe("POST /api/articles/:article_id/comments", () => {
+  test("201: Should add a comment to the databse with the given information from an object", () => {
+    const commentObj = { username: "lurker", body: "this article sucks!" };
+
+    return request(app)
+      .post("/api/articles/1/comments")
+      .expect(201)
+      .send(commentObj)
+      .then((data) => {
+        expect(data.body.comment).toEqual(
+          expect.objectContaining({
+            author: "lurker",
+            body: "this article sucks!",
+            comment_id: expect.any(Number),
+            created_at: expect.any(String),
+            votes: 0,
+            article_id: 1,
+          })
+        );
+      });
+  });
+  test("404: should return User Not Found if given an incorrect username", () => {
+    const commentObj = { username: "TrollMaster", body: "this article sucks!" };
+
+    return request(app)
+      .post("/api/articles/1/comments")
+      .expect(404)
+      .send(commentObj)
+      .then((data) => {
+        expect(data.body).toEqual({ msg: "User Not Found" });
+      });
+  });
+  test("400: should return Comment Must be text if given an invalid body format", () => {
+    const commentObj = { username: "lurker", body: 45620 };
+
+    return request(app)
+      .post("/api/articles/1/comments")
+      .expect(400)
+      .send(commentObj)
+      .then((data) => {
+        expect(data.body).toEqual({ msg: "Comment must be text" });
+      });
+  });
+  test("400: if the article_id is not a number return bad request message", () => {
+    return request(app)
+      .post("/api/articles/fish/comments")
+      .expect(400)
+      .then((data) => {
+        expect(data.body).toEqual({ msg: "Bad Request" });
+      });
+  });
+  test("404: if the article_id is a number but not the number matching an article return a not found message", () => {
+    return request(app)
+      .post("/api/articles/9999999/comments")
+      .expect(404)
+      .then((data) => {
+        expect(data.body).toEqual({ msg: "Article Not Found" });
+      });
+  });
+  test("400: should give bad request if given an object with the incorrect properties.", () => {
+    const commentObj = { familyName: "Smith", body: 45620 };
+
+    return request(app)
+      .post("/api/articles/1/comments")
+      .expect(400)
+      .send(commentObj)
+      .then((data) => {
+        expect(data.body).toEqual({msg: "Bad Request"});
       });
   });
 });
