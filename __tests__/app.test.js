@@ -4,6 +4,7 @@ const testData = require("../db/data/test-data");
 const db = require("../db/connection");
 const app = require("../app.js");
 const request = require("supertest");
+require("jest-sorted");
 
 beforeEach(() => {
   return seed(testData);
@@ -14,7 +15,7 @@ afterAll(() => {
 });
 
 describe("check endpoint", () => {
-  test("404: should return Endpoint Not Found if given any endpoint other than users", () => {
+  test("404: should return Endpoint Not Found if given any endpoint which does not exist", () => {
     return request(app)
       .get("/api/jelly")
       .expect(404)
@@ -39,7 +40,7 @@ describe("get api topics", () => {
   });
 });
 
-describe("get api articles", () => {
+describe("get api articles by id", () => {
   test("200: should return an article object which has the following properties, author ,title, article_id, body, topic, created_at and votes", () => {
     return request(app)
       .get("/api/articles/1")
@@ -160,3 +161,30 @@ describe("get api articles with comments", () => {
       });
   });
 });
+
+
+describe("get api articles", () => {
+  test("200: should return an array of article objects sorted by date in descending order", () => {
+    return request(app)
+      .get("/api/articles")
+      .expect(200)
+      .then((data) => {
+        expect(data.body).toHaveLength(12);
+        expect(data.body).toBeSortedBy("created_at", {
+          descending: true,
+        });
+        data.body.forEach((article) => {
+          expect(article).toHaveProperty(
+            "author",
+            "title",
+            "article_id",
+            "topic",
+            "created_at",
+            "votes",
+            "comment_count"
+          );
+        });
+      });
+  });
+});
+
