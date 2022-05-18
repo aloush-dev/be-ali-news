@@ -17,14 +17,22 @@ exports.postDbComment = (reqParams, reqBody) => {
   const { article_id } = reqParams;
   const { username, body } = reqBody;
 
-  if (typeof body !== 'string') {
-    return Promise.reject({ status: 400, msg: "Comment must be text" });
-  }
   return db
-    .query(
-      `INSERT INTO comments(author, body,article_id) VALUES($1,$2,$3) RETURNING *;`,
-      [username, body, article_id]
-    )
+    .query(`SELECT * FROM articles WHERE article_id = $1`, [article_id])
+    .then((data) => {
+      if (data.rows.length === 0) {
+        return Promise.reject({ status: 404, msg: "Article Not Found" });
+      }
+    })
+    .then(() => {
+      if (typeof body !== "string") {
+        return Promise.reject({ status: 400, msg: "Comment must be text" });
+      }
+      return db.query(
+        `INSERT INTO comments(author, body,article_id) VALUES($1,$2,$3) RETURNING *;`,
+        [username, body, article_id]
+      );
+    })
     .then((data) => {
       return data.rows;
     });
