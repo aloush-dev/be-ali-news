@@ -265,4 +265,20 @@ describe("POST /api/articles/:article_id/comments", () => {
         expect(data.body).toEqual({ msg: "Comment must be text" });
       });
   });
+  test("400: if the article_id is not a number return bad request message", () => {
+    return request(app)
+      .post("/api/articles/fish/comments")
+      .expect(400)
+      .then((data) => {
+        expect(data.body).toEqual({ msg: "Bad Request" });
+      });
+  });
+  test("404: if the article_id is a number but not the number matching an article return a not found message", () => {
+    return request(app)
+      .post("/api/articles/9999999/comments")
+      .expect(404)
+      .then((data) => {
+        expect(data.body).toEqual({ msg: "Article Not Found" });
+      });
+  });
 });
