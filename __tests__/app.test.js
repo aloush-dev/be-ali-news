@@ -281,4 +281,15 @@ describe("POST /api/articles/:article_id/comments", () => {
         expect(data.body).toEqual({ msg: "Article Not Found" });
       });
   });
+  test("400: should give bad request if given an object with the incorrect properties.", () => {
+    const commentObj = { familyName: "Smith", body: 45620 };
+
+    return request(app)
+      .post("/api/articles/1/comments")
+      .expect(400)
+      .send(commentObj)
+      .then((data) => {
+        expect(data.body).toEqual({msg: "Bad Request"});
+      });
+  });
 });

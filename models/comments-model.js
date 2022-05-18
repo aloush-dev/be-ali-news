@@ -17,6 +17,10 @@ exports.postDbComment = (reqParams, reqBody) => {
   const { article_id } = reqParams;
   const { username, body } = reqBody;
 
+  if(!reqBody.hasOwnProperty("username") && reqBody.hasOwnProperty("body")){
+      return Promise.reject({ status: 400, msg: "Bad Request" })
+  }
+
   return db
     .query(`SELECT * FROM articles WHERE article_id = $1`, [article_id])
     .then((data) => {
