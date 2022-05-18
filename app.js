@@ -1,19 +1,28 @@
 const express = require("express");
 const app = express();
 
+// Function Requires
+
 const {
   handleApiReqErrors,
   handleCustomErrors,
   handlePsqlErrors,
   handleServerErrors,
 } = require("./errors/index");
+
 const { getTopics } = require("./controllers/topic-controller");
+
 const {
   getArticlesByID,
   patchArticleVotes,
-  getArticles
+  getArticles,
 } = require("./controllers/article-controller");
+
 const { getUsers } = require("./controllers/user-controller");
+
+const { getComments } = require("./controllers/comments-controller");
+
+//app.*
 
 app.use(express.json());
 
@@ -25,7 +34,9 @@ app.patch("/api/articles/:article_id", patchArticleVotes);
 
 app.get("/api/users", getUsers);
 
-app.get('/api/articles', getArticles)
+app.get("/api/articles", getArticles);
+
+app.get("/api/articles/:article_id/comments", getComments);
 
 // ERROR HANDLING
 

@@ -14,7 +14,7 @@ afterAll(() => {
   return db.end();
 });
 
-describe("check endpoint", () => {
+describe("Check Endpoint", () => {
   test("404: should return Endpoint Not Found if given any endpoint which does not exist", () => {
     return request(app)
       .get("/api/jelly")
@@ -25,7 +25,7 @@ describe("check endpoint", () => {
   });
 });
 
-describe("get api topics", () => {
+describe("GET /api/topic", () => {
   test("200 : should respond with an array of topic objects with the properties slug and description", () => {
     return request(app)
       .get("/api/topics")
@@ -40,7 +40,7 @@ describe("get api topics", () => {
   });
 });
 
-describe("get api articles by id", () => {
+describe("GET /api/articles/:article_id", () => {
   test("200: should return an article object which has the following properties, author ,title, article_id, body, topic, created_at and votes", () => {
     return request(app)
       .get("/api/articles/1")
@@ -75,7 +75,7 @@ describe("get api articles by id", () => {
   });
 });
 
-describe("patch api articles", () => {
+describe("PATCH /api/articles/:article_id", () => {
   test("200 : should accept an object with a POSITIVE number value. Update the article given in the endpoint with the amount of votes given in the article. ", () => {
     const updateVotes = { inc_votes: 10 };
 
@@ -127,7 +127,7 @@ describe("patch api articles", () => {
   });
 });
 
-describe("get api users", () => {
+describe("GET /api/users", () => {
   test("200: should return an array of users with their usernames", () => {
     return request(app)
       .get("/api/users")
@@ -141,7 +141,7 @@ describe("get api users", () => {
   });
 });
 
-describe("get api articles with comments", () => {
+describe("GET /api/articles/:article_id Including a comment count", () => {
   test("200 : should return a requested article as on object including a comment count", () => {
     return request(app)
       .get("/api/articles/1")
@@ -162,18 +162,17 @@ describe("get api articles with comments", () => {
   });
 });
 
-
-describe("get api articles", () => {
+describe("GET /api/articles", () => {
   test("200: should return an array of article objects sorted by date in descending order", () => {
     return request(app)
       .get("/api/articles")
       .expect(200)
       .then((data) => {
-        expect(data.body).toHaveLength(12);
-        expect(data.body).toBeSortedBy("created_at", {
+        expect(data.body.article).toHaveLength(12);
+        expect(data.body.article).toBeSortedBy("created_at", {
           descending: true,
         });
-        data.body.forEach((article) => {
+        data.body.article.forEach((article) => {
           expect(article).toHaveProperty(
             "author",
             "title",
@@ -188,3 +187,22 @@ describe("get api articles", () => {
   });
 });
 
+describe("GET /api/articles/article_id/comments ", () => {
+  test("200: should return an array of comments objects associated with the given article ID", () => {
+    return request(app)
+      .get("/api/articles/1/comments")
+      .expect(200)
+      .then((data) => {
+        expect(data.body.comments).toHaveLength(11);
+        data.body.comments.forEach((comment) => {
+          expect(comment).toHaveProperty(
+            "comment_id",
+            "author",
+            "votes",
+            "created_at",
+            "body"
+          );
+        });
+      });
+  });
+});
