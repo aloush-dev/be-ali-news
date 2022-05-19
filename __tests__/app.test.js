@@ -294,7 +294,7 @@ describe("POST /api/articles/:article_id/comments", () => {
   });
 });
 
-describe.only("GET /api/articles (queries)", () => {
+describe("GET /api/articles (queries)", () => {
   test("200: should return an array of articles sorted by a created_at by default", () => {
     return request(app)
       .get("/api/articles")
