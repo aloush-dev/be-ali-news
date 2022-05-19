@@ -381,6 +381,14 @@ describe("DELETE /api/comments/:comment_id", () => {
         expect(data.body).toEqual({ msg: "Comment Not Found" });
       });
   });
+  test('400: should return bad request if given something other than a valid comment_id', () => {
+    return request(app)
+    .delete("/api/comments/taylor_swift")
+    .expect(400)
+    .then((data) => {
+      expect(data.body).toEqual({ msg: "Bad Request" });
+    });
+  });
 });
 
 describe("GET /api", () => {
