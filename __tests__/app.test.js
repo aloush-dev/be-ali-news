@@ -323,16 +323,6 @@ describe.only("GET /api/articles (queries)", () => {
         expect(data.body).toEqual({ msg: "Invalid Sort Term" });
       });
   });
-  test("200: should return an array of articles sorted by a given query ordered by a given order (defaults to descending)", () => {
-    return request(app)
-      .get("/api/articles?sort_by=topic")
-      .expect(200)
-      .then((data) => {
-        expect(data.body.article).toBeSortedBy("topic", {
-          descending: true,
-        });
-      });
-  });
   test("200: should return an array of articles sorted by a given query ordered by a given order (Ascending)", () => {
     return request(app)
       .get("/api/articles?sort_by=article_id&order=ASC")
@@ -361,12 +351,17 @@ describe.only("GET /api/articles (queries)", () => {
         });
       });
   });
-  test("400: Should return an array of articles filtered by the given topic in the query", () => {
+  test("404: Should return Not Found if the Topic doesn't exist", () => {
     return request(app)
       .get("/api/articles?topic=taylor_swift")
-      .expect(400)
+      .expect(404)
       .then((data) => {
-        expect(data.body).toEqual({ msg: "Topic Doesn't Exist" });
+        expect(data.body).toEqual({ msg: "Not Found" });
       });
+  });
+  test('404: Should return Not Found if the topic is valid but has no articles associated with it ', () => {
+    return request(app).get('/api/articles?topic=paper').expect(404).then((data)=>{
+      expect(data.body).toEqual({msg: "Not Found"})
+    })
   });
 });

@@ -51,6 +51,14 @@ exports.fetchArticles = (sortBy = "created_at", orderBy = "DESC", Topic) => {
   ];
   const orderByList = ["ASC", "asc", "DESC", "desc"];
 
+  const queryValues = [];
+
+  let queryStr = `SELECT articles.*, COUNT(comment_id) :: INT
+  AS comment_count 
+  FROM articles 
+  LEFT JOIN comments
+  ON articles.article_id = comments.article_id `;
+
   if (!sortByList.includes(sortBy)) {
     return Promise.reject({ status: 400, msg: "Invalid Sort Term" });
   }
@@ -59,25 +67,19 @@ exports.fetchArticles = (sortBy = "created_at", orderBy = "DESC", Topic) => {
     return Promise.reject({ status: 400, msg: "Invalid Order Term" });
   }
 
+  if (Topic) {
+    queryValues.push(Topic);
+    queryStr += `WHERE topic = $1`;
+  }
+
   return db
     .query(
-      `SELECT articles.*, COUNT(comment_id) :: INT
-  AS comment_count 
-  FROM articles 
-  LEFT JOIN comments
-  ON articles.article_id = comments.article_id
-  GROUP BY articles.article_id
-  ORDER BY ${sortBy} ${orderBy};`
+      `${queryStr} GROUP BY articles.article_id ORDER BY ${sortBy} ${orderBy};`,
+      queryValues
     )
     .then((data) => {
-      if (Topic) {
-        const ifTopicExists = data.rows.filter((data) => {
-          return data.topic === Topic;
-        });
-        if (ifTopicExists.length === 0) {
-          return Promise.reject({ status: 400, msg: "Topic Doesn't Exist" });
-        }
-        return ifTopicExists;
+      if(data.rows.length === 0){
+        return Promise.reject({status: 404, msg: "Not Found"})
       }
       return data.rows;
     });
