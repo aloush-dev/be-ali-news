@@ -41,3 +41,13 @@ exports.postDbComment = (reqParams, reqBody) => {
       return data.rows;
     });
 };
+
+exports.deleteDbComment = (reqBody) =>{
+  const {comment_id} = reqBody
+  return db.query(`DELETE FROM comments WHERE comment_id = $1 RETURNING *`,[comment_id] ).then((data)=>{
+    console.log(data.rows)
+    if(data.rows.length === 0){
+      return Promise.reject({status: 404, msg: "Comment Not Found"})
+    }
+  })
+}

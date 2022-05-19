@@ -20,7 +20,11 @@ const {
 
 const { getUsers } = require("./controllers/user-controller");
 
-const { getComments, postComment } = require("./controllers/comments-controller");
+const {
+  getComments,
+  postComment,
+  deleteComment,
+} = require("./controllers/comments-controller");
 
 //app.*
 
@@ -38,7 +42,9 @@ app.get("/api/articles", getArticles);
 
 app.get("/api/articles/:article_id/comments", getComments);
 
-app.post('/api/articles/:article_id/comments', postComment)
+app.post("/api/articles/:article_id/comments", postComment);
+
+app.delete("/api/comments/:comment_id", deleteComment);
 
 // ERROR HANDLING
 

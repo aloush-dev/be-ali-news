@@ -359,9 +359,26 @@ describe("GET /api/articles (queries)", () => {
         expect(data.body).toEqual({ msg: "Not Found" });
       });
   });
-  test('404: Should return Not Found if the topic is valid but has no articles associated with it ', () => {
-    return request(app).get('/api/articles?topic=paper').expect(404).then((data)=>{
-      expect(data.body).toEqual({msg: "Not Found"})
-    })
+  test("404: Should return Not Found if the topic is valid but has no articles associated with it ", () => {
+    return request(app)
+      .get("/api/articles?topic=paper")
+      .expect(404)
+      .then((data) => {
+        expect(data.body).toEqual({ msg: "Not Found" });
+      });
+  });
+});
+
+describe("DELETE /api/comments/:comment_id", () => {
+  test("204: deletes the comment given by comment_id endpoint", () => {
+    return request(app).delete("/api/comments/1").expect(204);
+  });
+  test("404: should return Comment Not Found if no comment matches the comment_id", () => {
+    return request(app)
+      .delete("/api/comments/205")
+      .expect(404)
+      .then((data) => {
+        expect(data.body).toEqual({ msg: "Comment Not Found" });
+      });
   });
 });
