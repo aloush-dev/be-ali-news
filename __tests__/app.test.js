@@ -382,3 +382,13 @@ describe("DELETE /api/comments/:comment_id", () => {
       });
   });
 });
+
+describe("GET /api", () => {
+  test("200: respond with a JSON object describing all the available endpoints on API", () => {
+    return request(app)
+      .get("/api")
+      .then((data) => {
+        expect(typeof data.body).toEqual("object")
+      });
+  });
+});
