@@ -381,13 +381,13 @@ describe("DELETE /api/comments/:comment_id", () => {
         expect(data.body).toEqual({ msg: "Comment Not Found" });
       });
   });
-  test('400: should return bad request if given something other than a valid comment_id', () => {
+  test("400: should return bad request if given something other than a valid comment_id", () => {
     return request(app)
-    .delete("/api/comments/taylor_swift")
-    .expect(400)
-    .then((data) => {
-      expect(data.body).toEqual({ msg: "Bad Request" });
-    });
+      .delete("/api/comments/taylor_swift")
+      .expect(400)
+      .then((data) => {
+        expect(data.body).toEqual({ msg: "Bad Request" });
+      });
   });
 });
 
@@ -396,7 +396,84 @@ describe("GET /api", () => {
     return request(app)
       .get("/api")
       .then((data) => {
-        expect(typeof data.body).toEqual("object")
+        expect(typeof data.body).toEqual("object");
       });
   });
 });
+
+describe("GET /api/users/:username", () => {
+  test("200: Should return a user object of the given username", () => {
+    return request(app)
+      .get("/api/users/lurker")
+      .expect(200)
+      .then((data) => {
+        expect(data.body.users).toEqual(
+          expect.objectContaining({
+            username: "lurker",
+            avatar_url:
+              "https://www.golenbock.com/wp-content/uploads/2015/01/placeholder-user.png",
+            name: "do_nothing",
+          })
+        );
+      });
+  });
+  test("404: should return not found if username doesnt exist", () => {
+    return request(app)
+      .get("/api/users/taylor_swift")
+      .expect(404)
+      .then((data) => {
+        expect(data.body).toEqual({ msg: "User Not Found" });
+      });
+  });
+});
+
+describe("PATCH /api/comments/:comment_id", () => {
+  test("200 : should accept an object with a POSITIVE number value. Update the comment given in the endpoint with the amount of votes given in the object. ", () => {
+    const updateVotes = { inc_votes: 1 };
+
+    return request(app)
+      .patch("/api/comments/1")
+      .expect(200)
+      .send(updateVotes)
+      .then((data) => {
+        expect(data.body.comment).toEqual({
+          comment_id: 1,
+          body: "Oh, I've got compassion running out of my nose, pal! I'm the Sultan of Sentiment!",
+          votes: 17,
+          author: "butter_bridge",
+          article_id: 9,
+          created_at: "2020-04-06T12:17:00.000Z",
+        });
+      });
+  });
+  test("200 : should accept an object with a NEGATIVE number value. Update the comment given in the endpoint with the amount of votes given in the object. ", () => {
+    const updateVotes = { inc_votes: -1 };
+
+    return request(app)
+      .patch("/api/comments/1")
+      .expect(200)
+      .send(updateVotes)
+      .then((data) => {
+        expect(data.body.comment).toEqual({
+          comment_id: 1,
+          body: "Oh, I've got compassion running out of my nose, pal! I'm the Sultan of Sentiment!",
+          votes: 15,
+          author: "butter_bridge",
+          article_id: 9,
+          created_at: "2020-04-06T12:17:00.000Z",
+        });
+      });
+  });
+  test("400: check that the object which is being given has the correct properties", () => {
+    const updateVotes = { haha_wrong_prop: -50 };
+
+    return request(app)
+      .patch("/api/comments/1")
+      .expect(400)
+      .send(updateVotes)
+      .then((data) => {
+        expect(data.body).toEqual({ msg: "Wrong Object Type" });
+      });
+  });
+});
+

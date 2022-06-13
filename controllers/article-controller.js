@@ -2,6 +2,9 @@ const {
   fetchArticlesByID,
   fetchArticleVotes,
   fetchArticles,
+  fetchComments,
+  postDbComment,
+  fetchArticleToPost,
 } = require("../models/article-model");
 
 exports.getArticlesByID = (req, res, next) => {
@@ -29,3 +32,26 @@ exports.getArticles = (req, res, next) => {
     .catch(next);
 };
 
+exports.getComments = (req, res, next) => {
+  fetchComments(req.params)
+    .then((data) => {
+      res.status(200).send({ comments: data });
+    })
+    .catch(next);
+};
+
+exports.postComment = (req, res, next) => {
+  postDbComment(req.params, req.body)
+    .then((data) => {
+      res.status(201).send({ comment: data[0] });
+    })
+    .catch(next);
+};
+
+exports.postArticle = (req, res, next) => {
+  fetchArticleToPost(req.body)
+    .then((data) => {
+      res.status(201).send({ article: data.body });
+    })
+    .catch(next);
+};

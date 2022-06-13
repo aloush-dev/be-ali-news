@@ -78,9 +78,74 @@ exports.fetchArticles = (sortBy = "created_at", orderBy = "DESC", Topic) => {
       queryValues
     )
     .then((data) => {
-      if(data.rows.length === 0){
-        return Promise.reject({status: 404, msg: "Not Found"})
+      if (data.rows.length === 0) {
+        return Promise.reject({ status: 404, msg: "Not Found" });
       }
+      return data.rows;
+    });
+};
+
+exports.fetchComments = (reqParams) => {
+  const { article_id } = reqParams;
+  return db
+    .query(
+      `SELECT * FROM comments 
+  WHERE article_id = $1`,
+      [article_id]
+    )
+    .then((data) => {
+      return data.rows;
+    });
+};
+
+exports.postDbComment = (reqParams, reqBody) => {
+  const { article_id } = reqParams;
+  const { username, body } = reqBody;
+
+  if (!reqBody.hasOwnProperty("username") && reqBody.hasOwnProperty("body")) {
+    return Promise.reject({ status: 400, msg: "Bad Request" });
+  }
+
+  return db
+    .query(`SELECT * FROM articles WHERE article_id = $1`, [article_id])
+    .then((data) => {
+      if (data.rows.length === 0) {
+        return Promise.reject({ status: 404, msg: "Article Not Found" });
+      }
+    })
+    .then(() => {
+      if (typeof body !== "string") {
+        return Promise.reject({ status: 400, msg: "Comment must be text" });
+      }
+      return db.query(
+        `INSERT INTO comments(author,body,article_id) VALUES($1,$2,$3) RETURNING *;`,
+        [username, body, article_id]
+      );
+    })
+    .then((data) => {
+      return data.rows;
+    });
+};
+
+exports.fetchArticleToPost = (reqBody) => {
+  const { author, title, body, topic } = reqBody;
+
+  if (
+    !reqBody.hasOwnProperty("author") &&
+    reqBody.hasOwnProperty("body") &&
+    reqBody.hasOwnProperty("title") &&
+    reqBody.hasOwnProperty("topic")
+  ) {
+    return Promise.reject({ status: 400, msg: "Bad Request" });
+  }
+
+  return db
+    .query(
+      `INSERT INTO articles(author,body,title,topic) VALUES ($1,$2,$3,$4) RETURNING *;`,
+      [author, body, title, topic]
+    )
+    .then((data) => {
+      console.log(data.rows);
       return data.rows;
     });
 };

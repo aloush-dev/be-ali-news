@@ -1,7 +1,11 @@
 const express = require("express");
 const app = express();
-const endpoints = require('./endpoints.json')
-
+const endpoints = require("./endpoints.json");
+const articleRoutes = require("./routes/article-routes");
+const topicRoutes = require("./routes/topic-routes");
+const userRoutes = require("./routes/user-routes");
+const commentRoutes = require("./routes/comment-routes");
+const cors = require('cors');
 // Function Requires
 
 const {
@@ -11,41 +15,20 @@ const {
   handleServerErrors,
 } = require("./errors/index");
 
-const { getTopics } = require("./controllers/topic-controller");
-
-const {
-  getArticlesByID,
-  patchArticleVotes,
-  getArticles,
-} = require("./controllers/article-controller");
-
-const { getUsers } = require("./controllers/user-controller");
-
-const {
-  getComments,
-  postComment,
-  deleteComment,
-} = require("./controllers/comments-controller");
-
 //app.*
+
+app.use(cors());
 
 app.use(express.json());
 
-app.get("/api/topics", getTopics);
+app.use(articleRoutes);
 
-app.get("/api/articles/:article_id", getArticlesByID);
+app.use(topicRoutes);
 
-app.patch("/api/articles/:article_id", patchArticleVotes);
+app.use(userRoutes);
 
-app.get("/api/users", getUsers);
+app.use(commentRoutes);
 
-app.get("/api/articles", getArticles);
-
-app.get("/api/articles/:article_id/comments", getComments);
-
-app.post("/api/articles/:article_id/comments", postComment);
-
-app.delete("/api/comments/:comment_id", deleteComment);
 
 app.get("/api", (req, res, next) => {
   res.send(endpoints);
