@@ -477,3 +477,27 @@ describe("PATCH /api/comments/:comment_id", () => {
   });
 });
 
+describe.only("POST /api/users", () => {
+  test("201: Should return an object with the info of the created user", () => {
+    const newUser = {
+      username: "tswiz",
+      avatar_url:
+        "https://media.resources.festicket.com/www/artists/TaylorSwift_8XLRDtp.jpg",
+      name: "Taylor Swift",
+    };
+    return request(app)
+      .post("/api/users")
+      .expect(201)
+      .send(newUser)
+      .then((data) => {
+        expect(data.body.user).toEqual(
+          expect.objectContaining({
+            username: "tswiz",
+            avatar_url:
+              "https://media.resources.festicket.com/www/artists/TaylorSwift_8XLRDtp.jpg",
+            name: "Taylor Swift",
+          })
+        );
+      });
+  });
+});

@@ -145,7 +145,6 @@ exports.fetchArticleToPost = (reqBody) => {
       [author, body, title, topic]
     )
     .then((data) => {
-      console.log(data.rows);
       return data.rows;
     });
 };
