@@ -7,7 +7,7 @@ const {
   getArticles,
   getComments,
   postComment,
-  postArticle
+  postArticle,
 } = require("../controllers/article-controller");
 
 router.get("/api/articles", getArticles);
@@ -18,8 +18,8 @@ router.patch("/api/articles/:article_id", patchArticleVotes);
 
 router.get("/api/articles/:article_id/comments", getComments);
 
-router.post("/api/articles/:article_id/comments", postComment);
-
 router.post("/api/articles", postArticle);
+
+router.post("/api/articles/:article_id/comments", postComment);
 
 module.exports = router;

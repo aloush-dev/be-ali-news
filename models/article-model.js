@@ -141,10 +141,11 @@ exports.fetchArticleToPost = (reqBody) => {
 
   return db
     .query(
-      `INSERT INTO articles(author,body,title,topic) VALUES ($1,$2,$3,$4) RETURNING *;`,
+      `INSERT INTO articles(author,body,title,topic) VALUES($1,$2,$3,$4) RETURNING *;`,
       [author, body, title, topic]
     )
     .then((data) => {
+      console.log("hello")
       return data.rows;
     });
 };
