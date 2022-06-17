@@ -4,7 +4,8 @@ const router = express.Router();
 const {
   getUsers,
   getUserByUsername,
-  postUser
+  postUser,
+  updateAvatar
 } = require("../controllers/user-controller");
 
 router.get("/api/users", getUsers);
@@ -12,5 +13,7 @@ router.get("/api/users", getUsers);
 router.get("/api/users/:username", getUserByUsername);
 
 router.post("/api/users", postUser)
+
+
 
 module.exports = router;

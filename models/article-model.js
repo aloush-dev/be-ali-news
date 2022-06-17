@@ -132,20 +132,21 @@ exports.fetchArticleToPost = (reqBody) => {
 
   if (
     !reqBody.hasOwnProperty("author") &&
-    reqBody.hasOwnProperty("body") &&
-    reqBody.hasOwnProperty("title") &&
-    reqBody.hasOwnProperty("topic")
+    !reqBody.hasOwnProperty("body") &&
+    !reqBody.hasOwnProperty("title") &&
+    !reqBody.hasOwnProperty("topic")
   ) {
     return Promise.reject({ status: 400, msg: "Bad Request" });
   }
 
   return db
     .query(
-      `INSERT INTO articles(author,body,title,topic) VALUES($1,$2,$3,$4) RETURNING *;`,
-      [author, body, title, topic]
+      `INSERT INTO articles(author,title,body,topic) VALUES($1,$2,$3,$4) RETURNING *;`,
+      [author, title, body, topic]
     )
     .then((data) => {
-      console.log("hello")
-      return data.rows;
+      return data.rows[0];
+    }).catch((err)=>{
+      console.log(err)
     });
 };

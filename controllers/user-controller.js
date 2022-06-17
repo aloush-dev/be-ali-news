@@ -3,6 +3,7 @@ const {
   fetchUsers,
   fetchUserByUsername,
   fetchUserToPost,
+  fetchAvatarToUpdate
 } = require("../models/user-model");
 
 exports.getUsers = (req, res, next) => {
@@ -28,3 +29,4 @@ exports.postUser = (req, res, next) => {
     })
     .catch(next);
 };
+

@@ -51,7 +51,8 @@ exports.postComment = (req, res, next) => {
 exports.postArticle = (req, res, next) => {
   fetchArticleToPost(req.body)
     .then((data) => {
-      res.status(201).send({ article: data.body });
+      console.log(data)
+      res.status(201).send({ article: data });
     })
     .catch(next);
 };

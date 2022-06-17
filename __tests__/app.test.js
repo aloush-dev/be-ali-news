@@ -502,30 +502,30 @@ describe("POST /api/users", () => {
   });
 });
 
-// describe("POST /api/articles", () => {
-//   test("201: should create an article with given object and return an object of the created article", () => {
-//     const newPost = {
-//       author: "TigerKing",
-//       title: "Isn't Ali just the best coder",
-//       body: "You read the title",
-//       topic: "coding",
-//     };
+describe.only("POST /api/articles", () => {
+  test("201: should create an article with given object and return an object of the created article", () => {
+    const newPost = {
+      author: "butter_bridge",
+      title: "Isn't Ali just the best coder",
+      body: "You read the title",
+      topic: "mitch",
+    };
 
-//     return request(app)
-//       .post("/api/articles")
-//       .expect(201)
-//       .send(newPost)
-//       .then((data) => {
-//         expect(data.body.article).toEqual(
-//           expect.objectContaining({
-//             title: expect.any(String),
-//             votes: expect.any(Number),
-//             created_at: expect.any(String),
-//             author: expect.any(String),
-//             topic: expect.any(String),
-//             comment_count: expect.any(Number),
-//           })
-//         );
-//       });
-//   });
-// });
+    return request(app)
+      .post("/api/articles")
+      .expect(201)
+      .send(newPost)
+      .then((data) => {
+        expect(data.body.article).toEqual(
+          expect.objectContaining({
+            title: expect.any(String),
+            votes: expect.any(Number),
+            created_at: expect.any(String),
+            author: expect.any(String),
+            topic: expect.any(String),
+            article_id: expect.any(Number),
+          })
+        );
+      });
+  });
+});
