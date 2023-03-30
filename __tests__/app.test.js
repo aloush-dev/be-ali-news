@@ -502,7 +502,7 @@ describe("POST /api/users", () => {
   });
 });
 
-describe.only("POST /api/articles", () => {
+describe("POST /api/articles", () => {
   test("201: should create an article with given object and return an object of the created article", () => {
     const newPost = {
       author: "butter_bridge",
